@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <script src="Organism.js"></script>
+        <script src="GameWorld.js"></script>
+        <script>
+            'use strict'
+            
+            //let gameArray = [];
+            let gArr = new GameWorld;
+
+            let p = new Plant(3,1);
+            let hv = new Herbivore(8,1);
+            let cv = new Carnivore(9,1);
+            let p2 = new Plant(5,5);
+
+            
+            gArr.addOrganism(p);
+            gArr.addOrganism(hv);
+            gArr.addOrganism(cv);
+            gArr.addOrganism(p2);
+            //gameArray.push(p);
+            //gameArray.push(hv);
+            //gameArray.push(cv);          
+           
+            
+            
+            for(let o of gArr){
+                o.performTimeStep(gArr);                
+            }
+            
+            console.log(gArr);
+            for(let i=0; i<gArr.length; i++){
+            document.body.append(JSON.stringify(gArr[i]));
+            }
+            for(let o of gArr){
+                o.performTimeStep(gArr);                
+            }
+            for(let i=0; i<gArr.length; i++){
+            document.body.append(JSON.stringify(gArr[i]));
+            }
+        </script>
+    </body>
+</html>
