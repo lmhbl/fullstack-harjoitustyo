@@ -3,17 +3,18 @@
 
 class Organism{
     constructor(loc_x, loc_y){
-       this.max_age = 1;
+       this.max_age = 10;
        this.age = 0;
        this.isAlive = true;
-       
+       this.max_x = 30;
+       this.max_y = 30;
        this.setLocation_x(loc_x);
        this.setLocation_y(loc_y);
        
 
     }
     getAge(){return this.age;}  
-    getAlive(){return this.isAlive;}  
+    
     getXLocation(){return this.loc_x;}
     getYLocation(){return this.loc_y;}
 
@@ -36,6 +37,20 @@ class Organism{
             this.setDead();
         }
     }
+    resetLocation(){
+        if(this.loc_x < 0){
+            this.loc_x = this.max_x;
+        }
+        if(this.loc_x > this.max_x){
+            this.loc_x = 0;
+        }
+        if(this.loc_y < 0){
+            this.loc_y = this.max_y;
+        }
+        if(this.loc_y > this.max_y){
+            this.loc_y = 0;
+        }
+    }
     
      
 }
@@ -53,6 +68,7 @@ class Herbivore extends Organism{
         this.increaseAge();
         this.compareAge();
         this.move();
+        this.resetLocation();
         
     }
    move(){
@@ -70,6 +86,7 @@ class Carnivore extends Organism{
         this.increaseAge();
         this.compareAge();
         this.move();
+        this.resetLocation();
     }
     move(){
         this.loc_x += 1;
