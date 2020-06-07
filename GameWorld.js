@@ -1,36 +1,33 @@
 'use strict'
-class GameWorld extends Array{
-     
+
+// kuvaa pelimaailma-taulukkoa, joka sisältää kaikki pelimaailman oliot
+class GameWorld extends Array{     
     constructor(){
-        super();
-        
-        
+        super();        
     }
-    // lisää olento pelimaailmaan
-    addOrganism(o){
+
+    // lisää olento taulukkoon
+    addOrganism(o){        
         this.push(o);
     }
-    getOrganismArray(){
-        return this;
-    }
+    // käy läpi kaikki pelimaailma-taulukon oliot, ja vertaa niiden koordinaatteja argumenttina saataviin koordinaatteihin
+    // jos koordinaatit ovat 30 yksikön säteellä, olio asetetaan kuolleeksi
     herbivoreLoc(locX, locY){
         for(let o of this){
-            if(o instanceof Plant && o.loc_x==locX && o.loc_y==locY){
+            if(o instanceof Plant && (o.loc_x>=locX-30 && o.loc_x<=locX+30)&& (o.loc_y>=locY-30 && o.loc_y<=locY+30)){                
                 o.setDead();
+                return true;
             }            
         }
     }
     
-    // käy läpi pelimaailaman olennot ja vertaa niiden sijaintia argumenttina saatuun sijaintiin
-    // jos sijainti sama -> olento kuolee
     carnivoreLoc(locX, locY){
         for(let o of this){
-            if(o instanceof Herbivore && o.loc_x==locX && o.loc_y==locY){
+            if(o instanceof Herbivore && (o.loc_x>=locX-30 && o.loc_x<=locX+30)&& (o.loc_y>=locY-30 && o.loc_y<=locY+30)){
                 o.setDead();
+                return true;
             }            
         }
     }
-    
-
-    
+   
 }

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <canvas id="pelimaailma" width="400" height="400"></canvas>
+        <script src="Organism.js"></script>
+        <script src="GameWorld.js"></script>       
+        <script>
+            'use strict'
+            
+            let gArr = new GameWorld();
+            
+            function createOrganisms(){
+                createPlants(document.getElementById("plant").value);
+                createHerbivores(document.getElementById("herbiv").value);
+                createCarnivores(document.getElementById("carniv").value);
+            }
+            // luo kasveja n määrän, ja lisää ne palimaailmaan            
+            function createPlants(n,x,y){
+                for(let i=0; i<n; i++){
+                    let loc_x = createRandomLocation(x);
+                    let loc_y = createRandomLocation(y);
+                    gArr.addOrganism(new Plant(loc_x,loc_y));
+                }
+            }
+             // luo kasvinsyöjiä n määrän, ja lisää ne palimaailmaan 
+            function createHerbivores(n,x,y){
+                for(let i=0; i<n; i++){
+                    let loc_x = createRandomLocation(x);
+                    let loc_y = createRandomLocation(y);
+                    gArr.addOrganism(new Herbivore(loc_x,loc_y));
+                }
+            }
+             // luo petoja n määrän, ja lisää ne palimaailmaan 
+            function createCarnivores(n,x,y){
+                for(let i=0; i<n; i++){
+                    let loc_x = createRandomLocation(x);
+                    let loc_y = createRandomLocation(y);
+                    gArr.addOrganism(new Carnivore(loc_x,loc_y));
+                }
+            }
+
+            let canvas = document.getElementById('pelimaailma');
+            let ctx = canvas.getContext('2d')                 
+            ctx.font = '40px arial';
+            ctx.textAlign = 'center';
+
+            //aloittaa simulaation, suorittaa aika-askeleen sekunnin välein
+            let timer = null;
+            function startGame(){            
+                timer = setInterval(() => {clear();printGameWorld();timeStep();}, 1000);                
+            }
+
+            function stopGame(){               
+                clearInterval(timer);                             
+                alert("Game stopped");
+            }
+
+           // suorittaa aika-askelen kaikille pelimaailman eliöille, sekä lisää yhden eliön 20% todennäköisyydellä
+           function timeStep(){
+                for(let o of gArr){
+
+                    o.performTimeStep(gArr); 
+                    
+                    let r = Math.random();
+                    let x, y;
+                    if(r<0.1){                  
+                        if(o instanceof Plant){                            
+                            createPlants(1, o.loc_x, o.loc_y);                                                   
+                        }
+                        if(o instanceof Herbivore){
+                            createHerbivores(1, o.loc_x, o.loc_y);                            
+                        }
+                        if(o instanceof Carnivore){
+                            createCarnivores(1, o.loc_x, o.loc_y);                            
+                        }                       
+                    }                        
+                }
+                gArr = gArr.filter(o => o.isAlive); // kuolleet olennot poistetaan taulukosta                
+            }
+
+            // palauttaa satunnaisen luvun väliltä 20-380 (pelialueelta) jos argumenttia ei ole annettu
+            // jos argumentti on annettu, palauttaa satunnaisen luvun väliltä argumentti +- 10 
+            function createRandomLocation(loc){
+                if(loc===undefined){
+                    return Math.floor(Math.random() * (380-20+1)) + 20;            
+                } 
+                else{
+                    let [max, min] = [loc+10, loc-10];
+                    let new_loc = Math.floor(Math.random() * (max-min+1)) + min;                   
+                    return new_loc;
+                }
+            }
+    
+            function clear(){
+            ctx.clearRect(0,0,400,400);
+            }
+
+            // käy läpi pelimaailma-taulukon eliöt ja piirtää ne pelimaailmaan        
+            function printGameWorld(){
+               
+               for(let o of gArr){
+                   if(o.constructor.name==='Plant'){
+                       ctx.fillStyle = 'green';
+                       drawCircle(o.loc_x, o.loc_y);                        
+                       
+                   }
+                   if(o.constructor.name==='Herbivore'){                        
+                       ctx.fillStyle = 'blue';
+                       drawCircle(o.loc_x, o.loc_y);                        
+                   }
+                   if(o.constructor.name==='Carnivore'){                        
+                       ctx.fillStyle = 'red';
+                       drawCircle(o.loc_x, o.loc_y);
+                   }
+               }
+              
+           }
+            function drawCircle(x,y){
+                ctx.beginPath();
+                ctx.arc(x,y,5,0,2*Math.PI);                
+                ctx.fill();                        
+            }             
+        </script>
+        <style type="text/css">
+            canvas {border: 1px solid black;
+                    float:left;
+                    margin-right:20px;}
+            
+        </style>
+        <form>
+            <label for="plant">Kasvien määrä: </label>
+            <input type="number" id="plant" value="20"><br><br>
+            <label for="herbiv">Kasvinsyöjien määrä: </label>
+            <input type="number" id="herbiv" value="20"><br><br>
+            <label for="carniv">Petojen määrä: </label>
+            <input type="number" id="carniv" value="10"><br><br>
+            <input type="button" onclick="createOrganisms()" value="Aseta">
+        </form>
+        <br><br>
+        <button id="start-button" onclick="startGame()">Start</button>
+        <button id="stop-button" onclick="stopGame()">Stop</button>
+    </body>
+</html>
